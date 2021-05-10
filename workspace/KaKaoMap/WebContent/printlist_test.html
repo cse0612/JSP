@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>이미지 마커와 커스텀 오버레이</title>
+ <style>
+ .map_wrap, .map_wrap * {margin:0;padding:0;font-family:'Malgun Gothic',dotum,'돋움',sans-serif;font-size:12px;}
+.map_wrap a, .map_wrap a:hover, .map_wrap a:active{color:#000;text-decoration: none;}
+.map_wrap {position:relative;width:100%;height:500px;}
+#menu_wrap {position:absolute;top:0;left:0;bottom:0;width:250px;margin:10px 0 30px 10px;padding:5px;overflow-y:auto;background:rgba(255, 255, 255, 0.7);z-index: 1;font-size:12px;border-radius: 10px;}
+.bg_white {background:#fff;}
+#menu_wrap hr {display: block; height: 1px;border: 0; border-top: 2px solid #5F5F5F;margin:3px 0;}
+#menu_wrap .option{text-align: center;}
+#menu_wrap .option p {margin:10px 0;}  
+#menu_wrap .option button {margin-left:5px;}
+#placesList li {list-style: none;}
+#placesList .item {position:relative;border-bottom:1px solid #888;overflow: hidden;cursor: pointer;min-height: 65px;}
+#placesList .item span {display: block;margin-top:4px;}
+#placesList .item h5, #placesList .item .info {text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
+#placesList .item .info{padding:10px 0 10px 55px;}
+#placesList .info .gray {color:#8a8a8a;}
+#placesList .info .jibun {padding-left:26px;background:url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/places_jibun.png) no-repeat;}
+#placesList .info .tel {color:#009900;}
+#placesList .item .markerbg {float:left;position:absolute;width:36px; height:37px;margin:10px 0 0 10px;background:url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png) no-repeat;}
+#placesList .item .marker_1 {background-position: 0 -10px;}
+#placesList .item .marker_2 {background-position: 0 -56px;}
+#placesList .item .marker_3 {background-position: 0 -102px}
+#placesList .item .marker_4 {background-position: 0 -148px;}
+#placesList .item .marker_5 {background-position: 0 -194px;}
+#placesList .item .marker_6 {background-position: 0 -240px;}
+#placesList .item .marker_7 {background-position: 0 -286px;}
+#placesList .item .marker_8 {background-position: 0 -332px;}
+#placesList .item .marker_9 {background-position: 0 -378px;}
+#placesList .item .marker_10 {background-position: 0 -423px;}
+#placesList .item .marker_11 {background-position: 0 -470px;}
+#placesList .item .marker_12 {background-position: 0 -516px;}
+#placesList .item .marker_13 {background-position: 0 -562px;}
+#placesList .item .marker_14 {background-position: 0 -608px;}
+#placesList .item .marker_15 {background-position: 0 -654px;}
+#pagination {margin:10px auto;text-align: center;}
+#pagination a {display:inline-block;margin-right:10px;}
+#pagination .on {font-weight: bold; cursor: default;color:#777;}
+   .wrap {position: absolute;left: 0;bottom: 40px;width: 288px;height: 132px;margin-left: -144px;text-align: left;overflow: hidden;font-size: 12px;font-family: 'Malgun Gothic', dotum, '돋움', sans-serif;line-height: 1.5;}
+    .wrap * {padding: 0;margin: 0;}
+    .wrap .info {width: 286px;height: 120px;border-radius: 5px;border-bottom: 2px solid #ccc;border-right: 1px solid #ccc;overflow: hidden;background: #fff;}
+    .wrap .info:nth-child(1) {border: 0;box-shadow: 0px 1px 2px #888;}
+    .info .title {padding: 5px 0 0 10px;height: 30px;background: #eee;border-bottom: 1px solid #ddd;font-size: 18px;font-weight: bold;}
+    .info .close {position: absolute;top: 10px;right: 10px;color: #888;width: 17px;height: 17px;background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/overlay_close.png');}
+    .info .close:hover {cursor: pointer;}
+    .info .body {position: relative;overflow: hidden;}
+    .info .desc {position: relative;margin: 13px 0 0 90px;height: 75px;}
+    .desc .ellipsis {overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
+    .desc .jibun {font-size: 11px;color: #888;margin-top: -2px;}
+    .info .img {position: absolute;top: 6px;left: 5px;width: 73px;height: 71px;border: 1px solid #ddd;color: #888;overflow: hidden;}
+    .info:after {content: '';position: absolute;margin-left: -12px;left: 50%;bottom: 0;width: 22px;height: 12px;background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png')}
+    .info .link {color: #5085BB;}
+    
+</style>
+</head>
+<body>
+	<div class="map_wrap">
+    <div id="map" style="width:100%;height:100%;position:relative;overflow:hidden;"></div>
+
+    <div id="menu_wrap" class="bg_white">
+        <div class="option">
+            <div>
+                <form onsubmit="searchPlaces(); return false;">
+                    키워드 : <input type="text" value="" id="keyword" size="15"> 
+                    <button type="submit">검색하기</button> 
+                </form>
+            </div>
+        </div>
+        <hr>
+        <ul id="placesList"></ul>
+        <div id="pagination"></div>
+    </div>
+</div>
+	
+	<script	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<!-- 카카오 API 삽입 -->
+	<script type="text/javascript"	src="//dapi.kakao.com/v2/maps/sdk.js?appkey=269f3bdfee8403c85dd95f5cc96189e1&libraries=services"></script>
+	
+	<script>
+	/* ==========  데이타  ============== */ 
+	//[2차원 배열 생성 함수이용]
+	var rows=5;
+	var columns=3;
+	var data = [];
+	function create2DArray(rows, columns) {
+	    var arrData = new Array(rows);
+	    for(var i = 0; i < rows; i++) {
+	    	data = ["경기도 시흥시 은행로 9"+i,  "전세", "4.5억"];
+	        arrData[i] = data;
+	    }
+	    return arrData;
+	}
+	var arrData = create2DArray(rows, columns);
+
+//	console.log(arrData);
+	
+	// 마커를 담을 배열입니다
+	var markers = [];
+	
+	/* ==========  맵  생성  ============== */ 
+ 	var mapContainer = document.getElementById('map');		// 맵을 넣을 div 
+ 	var mapOption = { 
+ 			center : new kakao.maps.LatLng(37.566826, 126.9786567),	// 지도의 중심좌표 설정 
+ 			level: 3 										// 지도의 확대 레벨
+ 	};
+
+ 	var map = new kakao.maps.Map(mapContainer, mapOption);	// 맵 표시 
+
+ 	// 키워드 검색을 요청하는 함수입니다
+ 	function searchPlaces() {
+
+ 	    var keyword = document.getElementById('keyword').value;
+
+ 	    if (!keyword.replace(/^\s+|\s+$/g, '')) {
+ 	        alert('키워드를 입력해주세요!');
+ 	        return false;
+ 	    }
+		
+ 	    // 장소검색 객체를 통해 키워드로 장소검색을 요청합니다
+ 	    //ps.keywordSearch( keyword, placesSearchCB);
+ 	    
+ 	    let result = arrData.filter( word => word == keyword
+ 	    });
+ 	    
+ 	    console.log("result" + result);
+ 	}
+ 	
+ 	
+	/* ==========  마커이미지(MarkerImage) 객체  ==============*/ 
+ 	var imageSrc = 'https://i1.daumcdn.net/dmaps/apis/n_local_blit_04.png',		// 마커이미지 경로
+ 		imageSize = new kakao.maps.Size(31, 35), 								// 마커이미지 사이즈
+    	imageOption = {offset: new kakao.maps.Point(27, 69)}; 					// 마커이미지 옵션. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정
+    var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);		// 마커의 이미지정보를 가지고 있는 마커이미지 생성
+    
+    /* ==========  주소-좌표 변환 (Geocoder) 객체  ============== 
+     Methods:
+    	 addressSearch(addr, callback, options)	-> 주소 정보에 해당하는 좌표값을 요청한다.
+     Parameters:
+    	 addr (String) : 변환할 주소명
+    	 callback (Function) : 검색 결과를 받을 콜백함수
+    	 options (Object) > analyze_type : 검색어 매칭 방식 선택 옵션. SIMILAR 일 경우 입력한 것과 유사한 검색어도 검색결과에 포함시킨다. EXACT 일 경우 입력한 주소 문자열과 정확하게 매칭되는 주소만을 찾아준다. 기본값은 SIMILAR
+     Callback Arguments :
+    	 result (Array) : 결과 목록   결과 상세는 로컬 REST API 주소 검색 의 응답결과 참고  https://developers.kakao.com/docs/latest/ko/local/dev-guide#address-coord
+    					-  address_name	(String) :	전체 지번 주소 또는 전체 도로명 주소, 입력에 따라 결정됨
+    					-  x (String)	X 좌표값, 경위도인 경우 longitude(경도)
+    	 				-  y (String)	Y 좌표값, 경위도인 경우 latitude(위도)
+    	 				-  road_address	도로명 주소 상세 정보, 아래 RoadAaddress 항목 구성 요소 참고
+    	 status (Status) : 응답 코드 값 -> OK : 검색 결과 있음     	 ZERO_RESULT : 정상적으로 응답 받았으나 검색 결과는 없음     	 ERROR : 서버 응답에 문제가 있는 경우
+    */
+
+    var geocoder = new kakao.maps.services.Geocoder();	//	API주소에 libraries=services 추가!
+    //arr.forEach(callback(currentvalue, index){});
+ 	arrData.forEach(function(data, index) {	// 데이타 반복 실행
+ 	    geocoder.addressSearch(data[0], function(result, status) {
+ 			console.log("data[0]:" + data[0] + " status:" + status);
+	         if(status === kakao.maps.services.Status.OK) {	// status결과값 OK(상수)일 경우
+	          	 var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+	             var marker = new kakao.maps.Marker({		 // 결과값으로 받은 위치를 마커로 표시합니다
+	     	         map: map,
+	                 position: coords,
+	                 clickable: true,	// 마커를 클릭했을 때 지도의 클릭 이벤트가 발생하지 않도록 설정
+	                 image: markerImage // 마커이미지 설정 
+	             });
+	             
+                /* ==========  커스텀오버레이(CustomOvelay) 객체  ============== 
+                	Parameters:
+							options Object
+							clickable Boolean : true 로 설정하면 컨텐츠 영역을 클릭했을 경우 지도 이벤트를 막아준다.
+							content Node | String : 엘리먼트 또는 HTML 문자열 형태의 내용
+							map Map | Roadview : 커스텀 오버레이가 올라갈 지도 또는 로드뷰
+							position LatLng | Viewpoint : 커스텀 오버레이의 좌표 또는 로드뷰에서의 시점
+							xAnchor Number : 컨텐츠의 x축 위치. 0_1 사이의 값을 가진다. 기본값은 0.5  1에 가까울수록 왼쪽에 위치합니다.
+							yAnchor Number : 컨텐츠의 y축 위치. 0_1 사이의 값을 가진다. 기본값은 0.5  1에 가까울수록 위쪽에 위치합니다.
+							zIndex Number : 커스텀 오버레이의 z-index
+                	
+					Methods:
+						draw() 	위치를 재조정할 필요가 있을 때 호출된다.	이 함수 내에서 엘리먼트의 위치를 잡아주어야 한다
+						setMap(map) 지도에 사용자 오버레이를 올린다.	null 을 지정하면 오버레이를 제거한다.	
+                	*/
+	            // 커스텀 오버레이에 표시할 내용입니다     
+				// HTML 문자열 또는 Dom Element 입니다
+				var content = '<div class="wrap">' + 
+				            '    <div class="info">' + 
+				            '        <div class="title">' + data[1] + data[2] +  
+				            '            <div class="close" onclick="closeOverlay()" title="닫기"></div>' + 
+				            '        </div>' + 
+				            '        <div class="body">' + 
+				            '            <div class="img">' +
+				            '                <img src="https://cfile181.uf.daum.net/image/250649365602043421936D" width="73" height="70">' +
+				            '           </div>' + 
+				            '            <div class="desc">' + 
+				            '                <div class="ellipsis">'+ result[0].road_address.address_name +'</div>' + 
+				            '                <div class="jibun ellipsis">('+ result[0].road_address.zone_no + ')' + result[0].address.address_name +'</div>' + 
+				            '                <div><a href="https://www.kakaocorp.com/main" target="_blank" class="link">홈페이지</a></div>' + 
+				            '            </div>' + 
+				            '        </div>' + 
+				            '    </div>' +    
+				            '</div>';
+				
+
+			    
+	            // 커스텀 오버레이를 생성합니다
+				var customOverlay = new kakao.maps.CustomOverlay({
+					 content: content,
+  				     position: marker.getPosition()  
+				});    
+				
+				// 마커를 클릭했을 때 커스텀 오버레이를 표시합니다   
+				kakao.maps.event.addListener(marker, 'click', function() {
+					customOverlay.setMap(map);    // 커스텀 오버레이를 지도에 표시합니다
+		  		  }); 
+				
+				// 커스텀 오버레이를 닫기 위해 호출되는 함수입니다 
+				function closeOverlay() {
+					customOverlay.setMap(null);       // 커스텀 오버레이를 지도에 삭제합니다
+				}
+					
+				
+	             // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+	            map.setCenter(coords);
+	        	 
+	         }  // end if  ===============================================================
+	        
+	    }); // end geododer() 
+ 	}); // end forEach()
+
+ 	
+</script>
+</body>
+</html>
