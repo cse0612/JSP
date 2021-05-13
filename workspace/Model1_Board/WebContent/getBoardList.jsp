@@ -5,16 +5,21 @@
 <%@ page import="board.BoardDO" %>	
 <%@ page import="board.BoardDAO" %>
 <%@ page import="java.util.List" %>	
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%
 	request.setCharacterEncoding("UTF-8");
 
 	//검색 대상(제목 또는 작성자) 및 검색 텍스트 객체를 저장할 변수
 	String searchField = "";	//검색대상 객체 레퍼런스변수
 	String searchText = "";		// 검색텍스트
-
+	
+	System.out.println("searchCondition>>>>" + request.getParameter("searchCondition"));
+	
 	if(request.getParameter("searchCondition") != "" && request.getParameter("searchKeyword") != "") {
 		searchField = request.getParameter("searchCondition");
 		searchText = request.getParameter("searchKeyword");
+		System.out.println("ok!");
+				
 	}
 	
 	//BoardDAO 클래스 객체 생성후 메서드 호출
@@ -50,7 +55,8 @@
 				<td align="center">
 					<div class="input-group sm">
 						<select name="searchCondition" class="form-select" style="width:50px">
-		 						<option value="TITLE">제목</option>
+								<option value="">선택</option>
+								<option value="TITLE">제목</option>
 								<option value="WRITER">작성자</option>
 								<option value="CONTENT">내용</option>
 						</select>
@@ -74,15 +80,15 @@
 				</tr>
 			</thead>
 			<tbody>
-				<%  for(BoardDO board : boardList) { %>
+				<c:forEach var="board" items="${boardList}">
 				<tr>
-					<th scope="row"><%=board.getSeq() %></th>
-					<td><a href="getBoard.jsp?seq=<%=board.getSeq()%>"> <%=board.getTitle()%> </a></td>
-					<td><%=board.getWriter() %></td>
-					<td><%=board.getRegdate() %></td>
-					<td><%=board.getCnt() %></td>
+					<th scope="row">${board.getSeq()}</th>
+					<td><a href="getBoard.jsp?seq=${board.getSeq()}"> ${board.getTitle()} </a></td>
+					<td>${board.getWriter() }</td>
+					<td>${board.getRegdate() }</td>
+					<td>${board.getCnt() }</td>
 				</tr>
-				<% 	}	%>
+				</c:forEach>
 			</tbody>
 		</table>
 		<a href="getBoard.jsp">새 개시글 등록</a>

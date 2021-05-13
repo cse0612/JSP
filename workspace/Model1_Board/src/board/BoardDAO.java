@@ -25,9 +25,10 @@ public class BoardDAO {
 		try {
 			conn = JDBCUtil.getConnection();
 			String where ="";
-			
+			System.out.println(searchField);
 			//검색인 경우에만  where절 추가
 			if(searchField != null && searchText != null) {
+			//if(searchField != null && searchText != null) {
 				where = "where "+searchField+" like '%"+searchText+"%'";
 			} 
 			//SQL문 완성
