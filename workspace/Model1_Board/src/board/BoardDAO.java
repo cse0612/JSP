@@ -31,7 +31,7 @@ public class BoardDAO {
 				where = "where "+searchField+" like '%"+searchText+"%'";
 			} 
 			//SQL문 완성
-			String Condition_SQL = "select * from board "+where+" order by desc";  	
+			String Condition_SQL = "select * from board "+where+" order by seq desc";  	
 			
 			pstmt = conn.prepareStatement(Condition_SQL);
 			rs = pstmt.executeQuery();

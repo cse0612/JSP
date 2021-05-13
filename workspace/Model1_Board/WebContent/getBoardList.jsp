@@ -19,8 +19,14 @@
 	
 	//BoardDAO 클래스 객체 생성후 메서드 호출
 	BoardDAO boardDAO = new BoardDAO();
-	
 	List<BoardDO> boardList = boardDAO.getBoardList(searchField, searchText);
+	request.setAttribute("boardList", boardList);
+	
+	//총게시글 갯수 구하기
+	int totalList = boardList.size();
+	request.setAttribute("totalList", totalList);
+	
+	
 %>
 
 
@@ -38,7 +44,7 @@
 	</h3>
 	<!-- 게시글 검색폼 -->
 	<form name="form2" method="post" action="getBoardList.jsp">
-		<p>총게시글:</p>
+		<p>총게시글:${totalList}</p>
 		<table border="1" cellspacing="0" cellsapcing="0" width="700">
 			<tr>
 				<td align="center">
@@ -57,7 +63,7 @@
 
 
 		<!-- 게시판 목록 -->
-		<table class="table">
+		<table class="table" >
 			<thead>
 				<tr>
 					<th scope="col">#</th>
@@ -68,16 +74,18 @@
 				</tr>
 			</thead>
 			<tbody>
+				<%  for(BoardDO board : boardList) { %>
 				<tr>
-					<th scope="row">1</th>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
+					<th scope="row"><%=board.getSeq() %></th>
+					<td><a href="getBoard.jsp?seq=<%=board.getSeq()%>"> <%=board.getTitle()%> </a></td>
+					<td><%=board.getWriter() %></td>
+					<td><%=board.getRegdate() %></td>
+					<td><%=board.getCnt() %></td>
 				</tr>
+				<% 	}	%>
 			</tbody>
 		</table>
-
+		<a href="getBoard.jsp">새 개시글 등록</a>
 	</form>
 
 

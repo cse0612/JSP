@@ -10,6 +10,8 @@ public class BoardDO {
 	private String content;	//내용
 	private Date regdate;	//작성일
 	private int cnt;		//조회수
+	
+	
 	public int getSeq() {
 		return seq;
 	}
