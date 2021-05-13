@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>서버에 있는 json 데이터를 HTML 문서에 보여주기</title>
+<script src="http://code.jquery.com/jquery-3.3.1.js"></script>
+</head>
+<body>
+	<h2>개인정보 보기</h2>
+	<table id="example" border="1" width="500" height="70" cellpadding="5">
+		<tr aling="center">
+			<th>번호</th>
+			<th>이름</th>
+			<th>나이</th>
+		</tr>
+	</table>
+<script>
+
+    $(document).ready(function() {
+        $.ajax({
+ 			url:"info.json",
+ 			dataType:"json",
+ 			type:"POST",
+ 			success: function(result) {
+ 				var tableData = "";
+ 				
+ 				//$.each() 메서드의 첫번째 매겨변수로 위에서 선언한 배열은 전달 
+ 				$.each(result, function(index, item) { 
+ 					// 두 번째 매개변수로는 콜백함수인데 콜백함수의 매개변수 중 
+ 					// 첫 번째 index는 배열의 인덱스 또는 객체의 키를 의미하고 
+ 					// 두 번째 매개 변수 item은 해당 인덱스나 키가 가진 값을 의미합니다.
+					tableData += '<tr>';
+					tableData += '<td>' + item.no + '</td>';
+					tableData += '<td>' + item.name + '</td>';
+					tableData += '<td>' + item.age + '</td>' + '</tr>';
+ 				});
+ 				$("#example").append(tableData);
+ 			}
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>InsertRow, insertCell 자바스크립트 함수 예제</title>
+</head>
+<body>
+	<h2>테이블 엘리먼트에 동적으로 행추가, 행에 열추가하기</h2>
+	<form name="dynamicForm" method="post">
+		<table id="dynamic_table" border="1">
+		
+		</table>
+		<br>
+		<input type="button" value="행추가" onclick="addRow();">
+	</form>	
+	<script>
+	var count = 1;  // 전역 변수
+	function addRow() {
+		// table element 찾기
+		var dynamicTable = document.getElementById('dynamic_table');
+		// 새행(Row) 추가
+		var newRow = dynamicTable.insertRow();		//tr tag
+		// 새행에 cell 추가
+		var cell1 = newRow.insertCell();			//td tag
+		var cell2 = newRow.insertCell();			//td tag
+		// cell에 텍스트 추가
+		//newRow.innerHTML = "title"; // -> 아래 cell 무시됨
+		cell1.innerHTML = '<input type="checkbox" name="checkboxobj">';
+		cell2.innerHTML = "<input type='file' name='fileUpload" + count + "'>"; 
+		
+		count++;
+		
+	}
+	
+	var dropFile = function(event) {
+		   event.preventDefault();
+		}
+	
+	</script>
+	<form action="upload.php" method="post" enctype="multipart/form-data">
+   <input multiple="multiple" type="file" name="filename[]" />
+   <div onchange="dropfile();">Drap and Drop here.</div>
+</form>
+	
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+.td-align { align:left; }
+</style>
+</head>
+<body>
+	<h2>request 테스트 폼</h2>
+	<hr>
+	<form name="myForm" method="post" action="request_result.jsp">
+		<table border="1" cellspacing="1" cellpadding="5">
+			<tr>
+				<td>이름</td>
+				<td class="td-align"><input type="text" name="username"></td>
+			</tr>
+			<tr>
+				<td>직업</td>
+				<td class="td-align">
+					<select name="job">
+						<option value="">직업선택</option>
+						<option value="회사원">회사원</option>
+						<option value="프로그래머">프로그래머</option>
+						<option value="공무원">공무원</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>관심분야</td>
+				<td align="center">
+					<input type="checkbox" name="favorite" value="문화">문화
+					<input type="checkbox" name="favorite" value="경제">경제
+					<input type="checkbox" name="favorite" value="정치">정치
+					<input type="checkbox" name="favorite" value="여행">여행
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" align="center">
+					<input type="submit" value="확인">
+					<input type="reset" value="다시쓰기">
+				</td>
+			</tr>
+		</table>
+	</form>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>innerHTML 예제</title>
+</head>
+<body>
+	<h2>자바스크립트 언어의 특징</h2>
+	<ul id="feature">
+		<li>인터프리터 언어</li>
+		<li>객체기반언어</li>
+		<li>이벤트기준언어</li>
+	</ul>
+	
+	<script>
+		var featurefield = document.getElementById('feature').innerHTML;
+		document.write('<ul>' + featurefield + '</ul>');
+	</script>
+</body>
+</html>
