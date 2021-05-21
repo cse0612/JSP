@@ -26,12 +26,9 @@
 	BoardDAO boardDAO = new BoardDAO();
 	List<BoardDO> boardList = boardDAO.getBoardList(searchField, searchText);
 	request.setAttribute("boardList", boardList);
-	
 	//총게시글 갯수 구하기
 	int totalList = boardList.size();
 	request.setAttribute("totalList", totalList);
-	
-	
 %>
 
 
@@ -82,16 +79,16 @@
 			<tbody>
 				<c:forEach var="board" items="${boardList}">
 				<tr>
-					<th scope="row">${board.getSeq()}</th>
-					<td><a href="getBoard.jsp?seq=${board.getSeq()}"> ${board.getTitle()} </a></td>
-					<td>${board.getWriter() }</td>
-					<td>${board.getRegdate() }</td>
-					<td>${board.getCnt() }</td>
+					<th scope="row">${board.seq}</th>
+					<td><a href="getBoard.jsp?seq=${board.seq}"> ${board.title} </a></td>
+					<td>${board.writer}</td>
+					<td>${board.regdate}</td>
+					<td>${board.cnt}</td>
 				</tr>
 				</c:forEach>
 			</tbody>
 		</table>
-		<a href="getBoard.jsp">새 개시글 등록</a>
+		<a href="insertBoard.jsp">새 개시글 등록</a>
 	</form>
 
 

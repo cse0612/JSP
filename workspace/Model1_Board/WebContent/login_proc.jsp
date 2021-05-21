@@ -7,6 +7,7 @@
 <%@ page import="user.UserDAO" %>
     
 <%
+	request.setCharacterEncoding("UTF-8");
 	//1. 사용자 입력 정보 추출
 	String id = request.getParameter("id");
 	String password = request.getParameter("password");
